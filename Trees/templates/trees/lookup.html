@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% load static %}
+{% load profile_pic %}
+<head>
+    <title>{% block title %}Home{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'trees/css/base.css' %}">
+    <link rel="shortcut icon" type="image/png" href="{% static 'trees/images/favicon.png' %}"/>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --background:{{background}};
+            --backgroundDark: {{backgroundDark}};
+            --icolor: {{icolor}};
+            --text: {{text}};
+            --font: {{profile.profileFont}};
+            --box: {{box}}
+        }
+    </style>
+    {% block styling %}{% endblock %}
+</head>
+<body>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue-code-highlight@latest/dist/vue-code-highlight.min.js"></script>
+    <div id="app">
+        <v-app>
+            <v-app-bar app flat clipped-left color="blue darken-1">
+                <v-row no-gutters align="center" justify="center">
+                    <v-col cols="1">
+                        <v-app-bar-nav-icon @click="sideBar = true">
+                            <img id="luhmann-icon" src="{% static 'trees/images/favicon.png' %}">
+                        </v-app-bar-nav-icon>
+                    </v-col>
+                    <v-col cols="3">
+                        <v-toolbar-title>Luhmann</v-toolbar-title>
+                    </v-col>
+                    <v-spacer></v-spacer>
+                    <v-col cols="4">
+                        <v-toolbar-title>
+                            <v-text-field label="Buscar" outlined clearable dense class="mt-7 pa-n10" color="secondary" @keydown.enter="searchBranch"></v-text-field>
+                        </v-toolbar-title>
+                    </v-col>
+                    <v-spacer></v-spacer>
+                    <v-col cols="4" align="right">
+                        <v-btn href="/settings" icon><v-icon large>mdi-cog-outline<v-icon></v-btn>
+                    </v-col>
+                </v-row>
+            </v-app-bar>
+            <v-main>
+                <v-navigation-drawer clipped v-model="sideBar" absolute temporary hide-overlay elevation="0" width="80" class="no-shadow" color="blue darken-1">
+                    <v-list nav  @mouseout="sidebar = false">
+                        <v-list-item-group v-model="group" active-class="deep-blue--text text--accent-4" justify="center">
+                            <v-list-item href="/home/{{user}}" class="pa-0 my-4 justify-center mx-1">
+                                <v-icon large>mdi-home</v-icon>
+                            </v-list-item>
+                            <v-list-item v-for="(group, i) in allSidebarGroups" :key="i" class="pa-0 my-4 mx-1 justify-center text-h4" :href="'/home/'+group.fields.name">
+                                [[group.fields.name.charAt(0)]]
+                            </v-list-item>
+                            <v-list-item class="pa-0 my-4 justify-center mx-1" href="/create_group">
+                                <v-icon large>mdi-account-multiple-plus</v-icon>
+                            </v-list-item>
+                        </v-list-item-group>
+                    </v-list>
+                </v-navigation-drawer>
+                <br><br>
+                <h1 style="width:100%; text-align: center;">{{search_word}}</h1>
+                <br><v-divider></v-divider><br>
+                <v-row align="center" justify="center">
+                    <v-col cols="2">
+                        <v-menu v-model="afterDateMenu" :close-on-content-click="false" transition="scale-transition" offset-y min-width="auto">
+                            <template v-slot:activator="{ on, attrs }">
+                                <v-text-field v-model="afterDate" label="Despúes de" prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on"></v-text-field>
+                            </template>
+                            <v-date-picker v-model="afterDate" no-title scrollable>
+                                <v-spacer></v-spacer>
+                                <v-btn text color="primary" @click="afterDateMenu = false">Ok</v-btn>
+                            </v-date-picker>
+                        </v-menu>
+                    </v-col>
+                    <v-col cols="2">
+                        <v-menu v-model="beforeDateMenu" :close-on-content-click="false" transition="scale-transition" offset-y min-width="auto">
+                            <template v-slot:activator="{ on, attrs }">
+                                <v-text-field v-model="beforeDate" label="Antes de" prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on"></v-text-field>
+                            </template>
+                            <v-date-picker v-model="beforeDate" no-title scrollable >
+                                <v-spacer></v-spacer>
+                                <v-btn text color="primary" @click="beforeDateMenu = false">Ok</v-btn>
+                            </v-date-picker>
+                        </v-menu>
+                    </v-col>
+                    <v-col cols="2">
+                        <v-select v-model="user" :items="allUsers" label="Autor" solo no-data-text="No hay usuarios"></v-select>
+                    </v-col>
+                    <v-col cols="2">
+                        <v-select v-model="group" :items="allGroups" label="Grupo" multiple solo no-data-text="No hay grupos"></v-select>
+                    </v-col>
+                    <v-col cols="2">
+                        <v-select v-model="tag" :items="allTags" chips label="Etiqueta" multiple solo no-data-text="No hay etiquetas"></v-select>
+                    </v-col>
+                </v-row>
+                <v-divider></v-divider><br>
+                <v-container>
+                    <template v-for="(result, i) in allResults" v-if="conditions(result)">
+                        <v-hover v-slot="{ hover }">
+                            <v-card outlined class="my-4 pa-2" :style="hover ? 'outline: 2px solid #1976d2;' : 'transition: .3s;'" :href="'/branch/'+result.pk">
+                            <p v-html="result.fields.text"></p>
+                        </v-card>
+                    </v-hover>
+                </template>
+                </v-container>
+            </v-main>
+        </v-app>
+    </div>
+    <script>
+        const all_results = {{all_results|safe}}
+        const all_tags = {{all_tags|safe}}
+        const all_users = {{all_users|safe}}
+        const all_groups = {{all_groups|safe}}
+        const all_sidebar_groups = {{all_sidebar_groups|safe}}
+        const current_user = "{{request.user.username}}"
+    </script>
+    <script type="text/javascript" src="{% static 'trees/js/lookup.js' %}"></script>
+</body>
+</html>

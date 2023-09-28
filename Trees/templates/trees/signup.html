@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% load static %}
+<head>
+    <title>{% block title %}Home{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'trees/css/signup.css' %}">
+    {% block styling %}{% endblock %}
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <form method="post" id="signup">
+    {% csrf_token %}
+    {% for field in form %}
+        <p class="field">
+        <div class="field-content"><span class="field-label">{{ field.label_tag }}</span>{{ field }}</div>
+        {% for error in field.errors %}
+            <p style="color: red">{{ error }}</p>
+        {% endfor %}
+        </p>
+    {% endfor %}
+    <button type="submit">Sign up</button>
+    </form>
+</body>
+{% block frontendCode %}
+<script type="text/javascript" src="{% static 'trees/js/animation.js' %}"></script>
+{% endblock %}
+</body>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% load static %}
+{% load profile_pic %}
+<head>
+    <title>{% block title %}Home{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'trees/css/settigs.css' %}">
+    <link rel="shortcut icon" type="image/png" href="{% static 'trees/images/favicon.png' %}"/>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --background:{{background}};
+            --backgroundDark: {{backgroundDark}};
+            --icolor: {{icolor}};
+            --text: {{text}};
+            --font: {{profile.profileFont}};
+            --box: {{box}}
+        }
+    </style>
+    {% block styling %}{% endblock %}
+</head>
+<body>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+    <div id="app">
+        <v-app>
+            <v-app-bar app flat clipped-left color="blue darken-1">
+                <v-row no-gutters align="center" justify="center">
+                    <v-col cols="1">
+                        <v-app-bar-nav-icon @click="sideBar = true">
+                            <img id="luhmann-icon" src="{% static 'trees/images/favicon.png' %}">
+                        </v-app-bar-nav-icon>
+                    </v-col>
+                    <v-col cols="3">
+                        <v-toolbar-title>Luhmann</v-toolbar-title>
+                    </v-col>
+                    <v-spacer></v-spacer>
+                    <v-col cols="4">
+                        <v-toolbar-title>
+                            <v-text-field label="Buscar" outlined clearable dense class="mt-7 pa-n10" color="secondary" @keydown.enter="searchBranch"></v-text-field>
+                        </v-toolbar-title>
+                    </v-col>
+                    <v-spacer></v-spacer>
+                    <v-col cols="4" align="right">
+                        <v-btn v-if="validGroup" href="/group_profile/{{group_name}}" icon><v-icon large>mdi-account-multiple<v-icon></v-btn>
+                        <v-btn href="/settings" icon><v-icon large>mdi-cog-outline<v-icon></v-btn>
+                    </v-col>
+                </v-row>
+            </v-app-bar>
+            <v-main>
+                <v-navigation-drawer clipped v-model="sideBar" absolute temporary hide-overlay elevation="0" width="80" class="no-shadow" color="blue darken-1">
+                    <v-list nav  @mouseout="sidebar = false">
+                        <v-list-item-group v-model="group" active-class="deep-blue--text text--accent-4" justify="center">
+                            <v-list-item href="/home/{{user}}" class="pa-0 my-4 justify-center mx-1">
+                                <v-icon large>mdi-home</v-icon>
+                            </v-list-item>
+                            <v-list-item v-for="(group, i) in allGroups" :key="i" class="pa-0 my-4 mx-1 justify-center text-h4" :href="'/home/'+group.fields.name">
+                                [[group.fields.name.charAt(0)]]
+                            </v-list-item>
+                            <v-list-item class="pa-0 my-4 justify-center mx-1" href="/create_group">
+                                <v-icon large>mdi-account-multiple-plus</v-icon>
+                            </v-list-item>
+                        </v-list-item-group>
+                    </v-list>
+                </v-navigation-drawer>
+                <v-row justify="center" class="ma-10">
+                    <v-col cols="8">
+                        <v-card>
+                            <v-card-title class="justify-center">Apariencia</v-card-title>
+                            <v-divider></v-divider>
+                            <v-card-subtitle  align="center" class="text-h5">Tema</v-card-subtitle>
+                            <v-card-actions class="justify-center">
+                                <v-radio-group v-model="currentTheme" row>
+                                    <v-radio v-for="(theme, i) in themes" :label="theme" :value="theme" :key="i" @click="changeTheme"><v-radio>
+                                </v-radio-group>
+                            </v-card-actions>
+                            <v-card-subtitle  align="center" class="text-h5" :style="{fontFamily: fontFamily, fontSize:fontSize}">Texto</v-card-subtitle>
+                            <v-card-actions class="justify-center">
+                                <div width="50%">
+                                    <v-select :items="fonts" v-model="fontFamily" @change="setFont"></v-select>
+                                </div>
+                            </v-card-actions align="center">
+                                <div style="width:80%; margin-left:10%;">
+                                    <v-slider v-model="fontSize" :tick-labels="fontSizes" :max="12" step="1" ticks="always" tick-size="4" @change="setFontSize"></v-slider>
+                                </div>
+                            </v-card-actions>
+                            <br>
+                            <v-card-subtitle  align="center" class="text-h5" :style="{fontFamily: fontFamily, fontSize:fontSize}">Título</v-card-subtitle>
+                            <v-card-actions class="justify-center">
+                                <div width="50%">
+                                    <v-select :items="fonts" v-model="titleFontFamily" @change="seTitletFont"></v-select>
+                                </div>
+                            </v-card-actions>
+                            <br>
+                            </v-row>
+                        </v-card>
+                    </v-col>
+                </v-row>
+            </v-main>
+            <v-footer color="blue darken-1" padless class="mr-n5">
+                <v-row justify="center" no-gutters>
+                    <v-col class="py-1 text-center" cols="12">
+                        <v-btn v-for="link in links" :key="link" text rounded class="my-2" > [[ link ]] </v-btn>
+                    </v-col>
+                    <v-col class="py-1 text-center" cols="12">
+                        <v-divider></v-divider>
+                    </v-col>
+                    <v-col class="py-3 text-center" cols="12">
+                        Luhmann
+                    </v-col>
+                </v-row>
+            </v-footer>
+        </v-app>
+    </div>
+    <script>
+        const all_groups = {{all_groups|safe}}
+    </script>
+    <script type="text/javascript" src="{% static 'trees/js/settings.js' %}"></script>
+    {% block frontendCode %}{% endblock %}
+</body>
+</html>

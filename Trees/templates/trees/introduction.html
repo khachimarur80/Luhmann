@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% load static %}
+<head>
+    <title>{% block title %}Home{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'trees/css/introduction.css' %}">
+    <link rel="shortcut icon" type="image/png" href="{% static 'trees/images/favicon.png' %}"/>
+    {% block styling %}{% endblock %}
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    {% if not request.user.is_authenticated %}
+        <div id="login"><a href="{% url 'login' %}">Login</a></div>
+    {% endif %}
+    <div id="main-title">
+        <h1>Luhmann</h1>
+        {% if request.user.is_authenticated %}
+            <div id="get-started"><div><a href="{% url 'home' request.user %}">Start</a></div></div>
+        {% else %}
+            <div id="get-started"><div><a href="{% url 'signup' %}">Start</a></div></div>
+        {% endif %}
+    </div>
+</body>
+{% block frontendCode %}
+<script type="text/javascript" src="{% static 'trees/js/animation.js' %}"></script>
+{% endblock %}
+</body>
+</html>

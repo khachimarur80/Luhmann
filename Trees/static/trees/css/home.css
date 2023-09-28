@@ -1,0 +1,28 @@
+body::-webkit-scrollbar {
+    display: none;
+}
+div::-webkit-scrollbar {
+    width: 3px;
+}
+div::-webkit-scrollbar-track {
+    background: #eee;
+}
+div::-webkit-scrollbar-thumb {
+    background: #aaa;
+}
+div::-webkit-scrollbar-thumb:hover {
+    background: #888;
+}
+#app {
+    width: 100%;
+}
+#luhmann-icon {
+    height: 40px;
+    width: 40px;
+}
+.v-btn:hover:before {
+    opacity: 0 !important;
+}
+.no-shadow {
+    box-shadow: none !important;
+}

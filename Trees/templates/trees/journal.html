@@ -1,0 +1,23 @@
+{% extends "trees/base.html" %}
+
+{% load static %}
+
+{% block title %}Home | {{user}}{% endblock %}
+
+{% block styling %}
+    <link rel="stylesheet" href="{% static 'trees/css/settigs.css' %}">
+    <style>
+        #contents {
+            background-color: {{background}};
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+{% endblock %}
+{% block frontendCode %}
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script type="text/javascript" src="{% static 'trees/js/settings.js' %}"></script>
+{% endblock %}

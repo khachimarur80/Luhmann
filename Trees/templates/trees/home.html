@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% load static %}
+<head>
+    <title>Home | {{user}}</title>
+    <link rel="stylesheet" href="{% static 'trees/css/home.css' %}">
+    <link rel="shortcut icon" type="image/png" href="{% static 'trees/images/favicon.png' %}"/>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'trees/css/home.css' %}">
+</head>
+<body>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+    <div id="app">
+        <v-app>
+            <v-app-bar app flat clipped-left color="blue darken-1">
+                <v-row no-gutters align="center" justify="center">
+                    <v-col cols="1">
+                        <v-app-bar-nav-icon @click="sideBar = true">
+                            <img id="luhmann-icon" src="{% static 'trees/images/favicon.png' %}">
+                        </v-app-bar-nav-icon>
+                    </v-col>
+                    <v-col cols="3">
+                        <v-toolbar-title>Luhmann</v-toolbar-title>
+                    </v-col>
+                    <v-spacer></v-spacer>
+                    <v-col cols="4">
+                        <v-toolbar-title>
+                            <v-text-field label="Buscar" outlined clearable dense class="mt-7 pa-n10" color="secondary" @keydown.enter="searchBranch"></v-text-field>
+                        </v-toolbar-title>
+                    </v-col>
+                    <v-spacer></v-spacer>
+                    <v-col cols="4" align="right">
+                        <v-btn v-if="validGroup" href="/group_profile/{{group_name}}" icon><v-icon large>mdi-account-multiple<v-icon></v-btn>
+                        <v-btn href="/settings" icon><v-icon large>mdi-cog-outline<v-icon></v-btn>
+                    </v-col>
+                </v-row>
+            </v-app-bar>
+            <v-main>
+                <v-navigation-drawer clipped v-model="sideBar" absolute temporary hide-overlay elevation="0" width="80" class="no-shadow" color="blue darken-1">
+                    <v-list nav  @mouseout="sidebar = false">
+                        <v-list-item-group v-model="group" active-class="deep-blue--text text--accent-4" justify="center">
+                            <v-list-item href="/home/{{user}}" class="pa-0 my-4 justify-center mx-1">
+                                <v-icon large>mdi-home</v-icon>
+                            </v-list-item>
+                            <v-list-item v-for="(group, i) in allGroups" :key="i" class="pa-0 my-4 mx-1 justify-center text-h4" :href="'/home/'+group.fields.name">
+                                [[group.fields.name.charAt(0)]]
+                            </v-list-item>
+                            <v-list-item class="pa-0 my-4 justify-center mx-1" href="/create_group">
+                                <v-icon large>mdi-account-multiple-plus</v-icon>
+                            </v-list-item>
+                        </v-list-item-group>
+                    </v-list>
+                </v-navigation-drawer>
+                <v-overlay :value="loading">
+                    <v-progress-circular indeterminate size="64" color="primary" ></v-progress-circular>
+                </v-overlay>
+                <v-container fluid>
+                    <v-row justify="start">
+                        <v-dialog v-model="createBranch" persistent max-width="290">
+                            <v-card>
+                                <v-card-title class="text-h5">
+                                Crear nueva branch
+                                </v-card-title>
+                                <template v-if="newBranchError">
+                                    <p  ref="errorMessage" class="error--text" style="text-align:center; width:100%">¡Rellena al menos un campo!</p>
+                                </template>
+                                <v-file-input truncate-length="20" label="Opcional" class="mr-10 ml-5" accept=".md" v-model="newBranchFile"></v-file-input>
+                                <v-text-field id="newBranchFile" clearable class="mr-10 ml-13" v-model="newBranchName"></v-text-field>
+                                <v-card-actions>
+                                <v-spacer></v-spacer>
+                                <v-btn color="red darken-1" text @click="cancelNewBranch"> Cancelar </v-btn>
+                                <v-btn color="green darken-1" text @click="submitBranch"> Crear </v-btn>
+                                </v-card-actions>
+                            </v-card>
+                        </v-dialog>
+                        <v-dialog v-model="changeTitle" persistent max-width="290">
+                            <v-card>
+                                <v-card-title class="text-h5">
+                                Cambiar Título
+                                </v-card-title>
+                                <template v-if="newTitleError">
+                                    <p  ref="errorMessage" class="error--text" style="text-align:center; width:100%">¡Rellena al menos un campo!</p>
+                                </template>
+                                <v-text-field clearable class="mr-10 ml-13" v-model="changeBranchName"></v-text-field>
+                                <v-card-actions>
+                                <v-spacer></v-spacer>
+                                <v-btn color="red darken-1" text @click="cancelChangeBranchTitle"> Cancelar </v-btn>
+                                <v-btn color="green darken-1" text @click="changeBranchTitle"> Cambiar </v-btn>
+                                </v-card-actions>
+                            </v-card>
+                        </v-dialog>
+                        <v-dialog v-model="insertImage" persistent max-width="290">
+                            <v-card>
+                                <v-card-title class="text-h5">
+                                Insertar Imagen
+                                </v-card-title>
+                                <template v-if="newBranchError">
+                                    <p  ref="errorMessage" class="error--text" style="text-align:center; width:100%">¡Rellena al menos un campo!</p>
+                                </template>
+                                <v-file-input truncate-length="20" label="Opcional" class="mr-10 ml-5" accept="image/*" v-model="insertImageFile"></v-file-input>
+                                <v-card-actions>
+                                <v-spacer></v-spacer>
+                                <v-btn color="red darken-1" text @click="cancelInsertThumbnail"> Cancelar </v-btn>
+                                <v-btn color="green darken-1" text @click="insertThumbnail"> Insertar </v-btn>
+                                </v-card-actions>
+                            </v-card>
+                        </v-dialog>
+                        <v-col cols="3">
+                            <v-row class="pt-10">
+                                <v-col cols="12" justify="center" align="center">
+                                    <v-btn v-if="hasPermissions" elevation="1" outlined class="my-5" @click="createBranch = true" color="amber darken-3">
+                                        Nuevo
+                                        <v-icon dark right>mdi-plus</v-icon>
+                                    </v-btn>
+                                    <v-card class="mx-auto" max-width="300" tile>
+                                    <v-subheader>Mostrar</v-subheader>
+                                    <v-list rounded dense>
+                                      <v-list-item-group v-model="homeOption" color="primary">
+                                        <v-list-item v-for="(homeOption,i) in homeOptions" :key="i" @click="changeDisplay(homeOption.text)">
+                                          <v-list-item-icon>
+                                            <v-icon v-text="homeOption.icon"></v-icon>
+                                          </v-list-item-icon>
+                                          <v-list-item-content>
+                                            <v-list-item-title v-text="homeOption.text"></v-list-item-title>
+                                          </v-list-item-content>
+                                        </v-list-item>
+                                      </v-list-item-group>
+                                    </v-list>
+                                  </v-card>
+                                </v-col>
+                                <v-col cols="12" v-if="hasPermissions">
+                                    <v-card class="mx-auto" max-width="300" tile>
+                                        <v-subheader>Inbox</v-subheader>
+                                        <v-subheader class="mt-n7">
+                                            <span class="warning--text">[[todo]]</span>/
+                                            <span class="error--text">[[doing]]</span>/
+                                            <span class="success--text">[[done]]</span>
+                                        </v-subheader>
+                                        <div>
+                                            <v-card v-for="(issue, j) in allDoingIssues" :key="j"  outlined elevation="2" class="ma-3 pa-3" align="center">
+                                                <v-card-text class="caption ma-0 pa-0" v-if="issue.fields.date">[[issue.fields.date]]</v-card-text>
+                                                <v-card-title class="justify-center ma-0 pa-0">[[issue.fields.text]]</v-card-title>
+                                                <v-card-actions class="justify-center">
+                                                    <v-btn v-bind:color="issueStateColor[issue.fields.state]" @click="changeStateIssue(issue,j)">[[issue.fields.state]]</v-btn>
+                                                </v-card-actions>
+                                            </v-card>
+                                        </div>
+                                        <v-divider></v-divider>
+                                        <div>
+                                            <v-card v-for="(issue, i) in allTodoIssues.slice(0, 3 - doing)" :key="i" elevation="2" outlined class="ma-3 pa-3" align="center">
+                                                <v-card-text class="caption ma-0 pa-0" v-if="issue.fields.date">[[issue.fields.date]]</v-card-text>
+                                                <v-card-title class="justify-center ma-0 pa-0">[[issue.fields.text]]</v-card-title>
+                                                <v-card-actions class="justify-center">
+                                                    <v-btn @click="passIssue()">Posponer</v-btn>
+                                                    <v-btn v-bind:color="issueStateColor[issue.fields.state]" @click="changeStateIssue(issue,i)">[[issue.fields.state]]</v-btn>
+                                                </v-card-actions>
+                                            </v-card>
+                                        </div>
+                                        <br>
+                                    </v-card>
+                                </v-col>
+                            </v-row>
+                        </v-col>
+                        <v-col cols="9">
+                            <v-row class="pt-10" class="overflow-auto">
+                                    <v-col cols="3" v-for="(leaf, i) in homeMainLeafs" :key="i" v-if="showMain">
+                                        <v-card class="mx-auto overflow-auto" width="344" outlined height="250" :img="leaf.fields.thumbnail_url" :href="'/branch/'+ leaf.pk">
+                                            <v-card-actions>
+                                                <!--<v-btn outlined rounded icon  small dense @click="reveal_main[leaf.pk] = !reveal_main[leaf.pk]">
+                                                    <v-icon>[[ reveal_main[leaf.pk] ? 'mdi-chevron-up' : 'mdi-chevron-down' ]]</v-icon>
+                                                </v-btn>-->
+                                                <v-spacer></v-spacer>
+                                                <v-menu bottom origin="center center" transition="scale-transition">
+                                                    <template v-slot:activator="{ on, attrs }">
+                                                        <v-btn outlined rounded icon dense small v-bind="attrs" v-on="on" @click.prevent="">
+                                                            <v-icon>mdi-dots-vertical</v-icon>
+                                                        </v-btn>
+                                                    </template>
+                                                    <v-list dense>
+                                                        <v-list-item-group class="py-n5">
+                                                            <v-list-item>
+                                                                <v-list-item-subtitle @click="deleteBranch" v-model="leaf.pk">Eliminar</v-list-item-content>
+                                                            </v-list-item>
+                                                        <v-list-item>
+                                                            <v-list-item-subtitle @click="triggerChangeTitle"  v-model="leaf.pk">Editar</v-list-item-content>
+                                                        </v-list-item>
+                                                        <v-list-item>
+                                                            <v-list-item-subtitle @click="triggerInsertThumbnail" v-model="leaf.pk">Insertar</v-list-item-content>
+                                                        </v-list-item>
+                                                        </v-list-item-group>
+                                                    </v-list>
+                                                </v-menu>
+                                            </v-card-actions>
+                                            <v-list-item v-show="!reveal_main[leaf.pk]" v-if="!leaf.fields.thumbnail">
+                                                <v-list-item-content>
+                                                    <v-list-item-title class="mb-1">
+                                                    <p>[[ leaf.fields.text ]]</p>
+                                                    </v-list-item-title>
+                                                    <v-list-item-subtitle>[[leaf.fields.thumbnail]]</v-list-item-subtitle>
+                                                </v-list-item-content>
+                                            </v-list-item>
+                                            <v-expand-transition>
+                                                <div v-show="reveal_main[leaf.pk]">
+                                                <v-divider></v-divider>
+                                                <v-card-text>
+                                                </v-card-text>
+                                                </div>
+                                            </v-expand-transition>
+                                        </v-card>
+                                    </v-col>
+                                    <v-col cols="3" v-for="(leaf, i) in homePinnedLeafs" :key="i"  v-if="showPinned">
+                                        <v-card class="mx-auto overflow-auto" width="344" outlined height="250"  :img="leaf.fields.thumbnail_url" :href="'/branch/'+ leaf.pk">
+                                            <v-card-actions>
+                                                <!--<v-btn outlined rounded icon  small dense @click="reveal_pinned[leaf.pk] = !reveal_pinned[leaf.pk]">
+                                                    <v-icon>[[ reveal_pinned[leaf.pk] ? 'mdi-chevron-up' : 'mdi-chevron-down' ]]</v-icon>
+                                                </v-btn>-->
+                                                <v-spacer></v-spacer>
+                                                <v-menu bottom origin="center center" transition="scale-transition">
+                                                    <template v-slot:activator="{ on, attrs }">
+                                                        <v-btn outlined rounded icon dense small v-bind="attrs" v-on="on" @click.prevent="">
+                                                            <v-icon>mdi-dots-vertical</v-icon>
+                                                        </v-btn>
+                                                    </template>
+                                                    <v-list dense>
+                                                        <v-list-item-group class="py-n5">
+                                                            <v-list-item>
+                                                                <v-list-item-subtitle @click="deleteBranch" v-model="leaf.pk">Eliminar</v-list-item-content>
+                                                            </v-list-item>
+                                                        <v-list-item>
+                                                            <v-list-item-subtitle @click="triggerChangeTitle"  v-model="leaf.pk">Editar</v-list-item-content>
+                                                        </v-list-item>
+                                                        <v-list-item>
+                                                            <v-list-item-subtitle @click="triggerInsertThumbnail" v-model="leaf.pk">Insertar</v-list-item-content>
+                                                        </v-list-item>
+                                                        </v-list-item-group>
+                                                    </v-list>
+                                                </v-menu>
+                                            </v-card-actions>
+                                            <v-list-item v-show="!reveal_pinned[leaf.pk]" v-if="!leaf.fields.thumbnail">
+                                                <v-list-item-content>
+                                                    <v-list-item-title class="mb-1">
+                                                    <p>[[ leaf.fields.text ]]</p>
+                                                    </v-list-item-title>
+                                                    <v-list-item-subtitle>[[leaf.fields.thumbnail]]</v-list-item-subtitle>
+                                                </v-list-item-content>
+                                            </v-list-item>
+                                            <v-expand-transition>
+                                                <div v-show="reveal_pinned[leaf.pk]">
+                                                <v-divider></v-divider>
+                                                <v-card-text>
+                                                </v-card-text>
+                                                </div>
+                                            </v-expand-transition>
+                                        </v-card>
+                                    </v-col>
+                                    <v-col cols="3" v-for="(leaf, i) in homeRecentLeafs" :key="i" v-if="showRecent">
+                                        <v-card class="mx-auto overflow-auto" width="344" outlined height="250"  :img="leaf.fields.thumbnail_url">
+                                            <v-card-actions>
+                                                <!--<v-btn outlined rounded icon  small dense @click="reveal_recent[leaf.pk] = !reveal_recent[leaf.pk]">
+                                                    <v-icon>[[ reveal_recent[leaf.pk] ? 'mdi-chevron-up' : 'mdi-chevron-down' ]]</v-icon>
+                                                </v-btn>-->
+                                                <v-spacer></v-spacer>
+                                                <v-menu bottom origin="center center" transition="scale-transition">
+                                                    <template v-slot:activator="{ on, attrs }">
+                                                        <v-btn outlined rounded icon dense small v-bind="attrs" v-on="on" @click.prevent="">
+                                                            <v-icon>mdi-dots-vertical</v-icon>
+                                                        </v-btn>
+                                                    </template>
+                                                    <v-list dense>
+                                                        <v-list-item-group class="py-n5">
+                                                            <v-list-item>
+                                                                <v-list-item-subtitle @click="deleteBranch" v-model="leaf.pk">Eliminar</v-list-item-content>
+                                                            </v-list-item>
+                                                            <v-list-item>
+                                                                <v-list-item-subtitle @click="triggerChangeTitle"  v-model="leaf.pk">Editar</v-list-item-content>
+                                                            </v-list-item>
+                                                            <v-list-item>
+                                                                <v-list-item-subtitle @click="triggerInsertThumbnail" v-model="leaf.pk">Insertar</v-list-item-content>
+                                                            </v-list-item>
+                                                        </v-list-item-group>
+                                                    </v-list>
+                                                </v-menu>
+                                            </v-card-actions>
+
+                                            <v-list-item v-show="!reveal_recent[leaf.pk]"  v-if="!leaf.fields.thumbnail">
+                                                <v-list-item-content>
+                                                    <v-list-item-title class="mb-1">
+                                                    <a v-bind:href="'/branch/'+ leaf.pk">[[ leaf.fields.text ]]</a>
+                                                    </v-list-item-title>
+                                                    <v-list-item-subtitle>[[leaf.fields.thumbnail]]</v-list-item-subtitle>
+                                                </v-list-item-content>
+                                            </v-list-item>
+                                            <v-expand-transition>
+                                                <div v-show="reveal_recent[leaf.pk]">
+                                                <v-divider></v-divider>
+                                                <v-card-text>
+                                                </v-card-text>
+                                                </div>
+                                            </v-expand-transition>
+                                        </v-card>
+                                    </v-col>
+                            </v-row>
+                        </v-col>
+                    </v-row>
+                </v-container>
+            </v-main>
+            <v-footer color="blue darken-1" padless class="mr-n5">
+                <v-row justify="center" no-gutters>
+                    <v-col class="py-1 text-center" cols="12">
+                        <v-btn v-for="link in links" :key="link" text rounded class="my-2" > [[ link ]] </v-btn>
+                    </v-col>
+                    <v-col class="py-1 text-center" cols="12">
+                        <v-divider></v-divider>
+                    </v-col>
+                    <v-col class="py-3 text-center" cols="12">
+                        Luhmann
+                    </v-col>
+                </v-row>
+            </v-footer>
+        </v-app>
+    </div>
+    <script>
+        const home_recent_leafs = {{all_recent_leafs|safe}}
+        const home_main_leafs = {{all_main_leafs|safe}}
+        const home_pinned_leafs = {{all_pinned_leafs|safe}}
+        const all_todo_issues = {{all_todo_issues|safe}}
+        const all_doing_issues = {{all_doing_issues|safe}}
+        const todo = {{todo}}
+        const doing = {{doing}}
+        const done = {{done}}
+        const valid_group = "{{group}}"=="True"
+        const permisionss = "{{permissions}}"=="True"
+        const all_groups = {{all_groups|safe}}
+    </script>
+    <script type="text/javascript" src="{% static 'trees/js/home.js' %}"></script>
+</body>
+</html>

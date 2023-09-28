@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% load static %}
+<head>
+    <title>{% block title %}Home{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'trees/css/base.css' %}">
+    <link rel="shortcut icon" type="image/png" href="{% static 'trees/images/favicon.png' %}"/>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+</head>
+<body>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+    <div id="app">
+        <v-app>
+            <v-app-bar app flat clipped-left color="blue darken-1">
+                <v-row no-gutters align="center" justify="center">
+                    <v-col cols="1">
+                        <v-app-bar-nav-icon @click="sideBar = true">
+                            <img id="luhmann-icon" src="{% static 'trees/images/favicon.png' %}">
+                        </v-app-bar-nav-icon>
+                    </v-col>
+                    <v-col cols="3">
+                        <v-toolbar-title>Luhmann</v-toolbar-title>
+                    </v-col>
+                    <v-spacer></v-spacer>
+                    <v-col cols="4">
+                        <v-toolbar-title>
+                            <v-text-field label="Buscar" outlined clearable dense class="mt-7 pa-n10" color="secondary" @keydown.enter="searchBranch"></v-text-field>
+                        </v-toolbar-title>
+                    </v-col>
+                    <v-spacer></v-spacer>
+                    <v-col cols="4" align="right">
+                        <v-btn v-if="validGroup" href="/group_profile/{{group_name}}" icon><v-icon large>mdi-account-multiple<v-icon></v-btn>
+                        <v-btn href="/settings" icon><v-icon large>mdi-cog-outline<v-icon></v-btn>
+                    </v-col>
+                </v-row>
+            </v-app-bar>
+            <v-main>
+                <v-navigation-drawer clipped v-model="sideBar" absolute temporary hide-overlay elevation="0" width="80" class="no-shadow" color="blue darken-1">
+                    <v-list nav  @mouseout="sidebar = false">
+                        <v-list-item-group v-model="group" active-class="deep-blue--text text--accent-4" justify="center">
+                            <v-list-item href="/home/{{user}}" class="pa-0 my-4 justify-center mx-1">
+                                <v-icon large>mdi-home</v-icon>
+                            </v-list-item>
+                            <v-list-item v-for="(group, i) in allGroups" :key="i" class="pa-0 my-4 mx-1 justify-center text-h4" :href="'/home/'+group.fields.name">
+                                [[group.fields.name.charAt(0)]]
+                            </v-list-item>
+                            <v-list-item class="pa-0 my-4 justify-center mx-1" href="/create_group">
+                                <v-icon large>mdi-account-multiple-plus</v-icon>
+                            </v-list-item>
+                        </v-list-item-group>
+                    </v-list>
+                </v-navigation-drawer>
+                <v-container>
+                    <v-row>
+                        <v-col cols="4">
+                            <v-card>
+                                <v-card-title class="justify-center">Admins</v-card-title>
+                                <v-divider></v-divider>
+                                <v-list>
+                                    <v-list-item v-for="(admin, i) in allAdmins" :key="i" class="justify-center">
+                                        [[admin.fields.username]]
+                                    </v-list-item>
+                                </v-list>
+                            </v-card>
+                        </v-col>
+                        <v-col cols="4">
+                            <v-card>
+                                <v-card-title class="justify-center">Editors</v-card-title>
+                                <v-divider></v-divider>
+                                <v-list>
+                                    <v-list-item v-for="(editor, i) in allEditors" :key="i" class="justify-center">
+                                        <v-btn v-if="isStaff" absolute left icon color="blue" @click="makeAdmin(editor, i)"><v-icon>mdi-account-arrow-up-outline</v-icon></v-btn>
+                                        [[editor.fields.username]]
+                                    </v-list-item>
+                                </v-list>
+                            </v-card>
+                        </v-col>
+                        <v-col cols="4">
+                            <v-card align="center">
+                                <v-card-title class="justify-center">Readers</v-card-title>
+                                <v-divider></v-divider>
+                                <v-card flat width="80%">
+                                    <br>
+                                    <v-btn v-if="isStaff" icon dense elevation="5" @click="addReader" :disabled="!addReaderValue"><v-icon>mdi-plus</v-icon></v-btn>
+                                    <v-select :items="allUsers" v-model="addReaderValue" v-if="isStaff"></v-select>
+                                </v-card>
+                                <v-list>
+                                    <v-list-item v-for="(reader, i) in allReaders" :key="i" class="justify-center">
+                                        <v-btn absolute v-if="isStaff" left icon color="green" @click="makeEditor(reader, i)"><v-icon>mdi-account-arrow-up-outline</v-icon></v-btn>
+                                        [[reader.fields.username]]
+                                    </v-list-item>
+                                </v-list>
+                            </v-card>
+                        </v-col>
+                    </v-row>
+                </v-container>
+            </v-main>
+            <v-footer color="blue darken-1" padless class="mr-n5">
+                <v-row justify="center" no-gutters>
+                    <v-col class="py-1 text-center" cols="12">
+                        <v-btn v-for="link in links" :key="link" text rounded class="my-2" > [[ link ]] </v-btn>
+                    </v-col>
+                    <v-col class="py-1 text-center" cols="12">
+                        <v-divider></v-divider>
+                    </v-col>
+                    <v-col class="py-3 text-center" cols="12">
+                        Luhmann
+                    </v-col>
+                </v-row>
+            </v-footer>
+        </v-app>
+    </div>
+    <script>
+        const admins = {{admins|safe}}
+        const readers =  {{readers|safe}}
+        const editors = {{editors|safe}}
+        const users = {{users|safe}}
+        const is_staff = "{{staff}}"=="True"
+        const all_groups = {{all_groups|safe}}
+    </script>
+    <script type="text/javascript" src="{% static 'trees/js/group_profile.js' %}"></script>
+</body>
+</html>

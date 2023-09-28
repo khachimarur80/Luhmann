@@ -1,0 +1,124 @@
+body {
+    font-family: 'HelveticaNeue-Thin';
+}
+h2 {
+    margin-top: 60px;
+    width: 100%;
+    text-align: center;
+}
+#create-group-form {
+    position: relative;
+    padding-top: 50px;
+    padding-bottom: 60px;
+    width: 50%;
+    margin-left: 25%;
+    box-shadow: 0rem 0rem 0.3rem -0.03rem var(--shadow);
+    border-radius: 10px;
+}
+#create {
+    position: absolute;
+    left: calc(50% - 35px);
+    width: 70px;
+    bottom: 20px;
+    padding: 5px;
+    background-color: transparent;
+    border-radius: 35px;
+    border: none;
+    cursor: pointer;
+    color: white;
+    background-color: rgb(17, 140, 255);
+    transition: .3s;
+}
+#create:hover {
+    transition: .3s;
+    transform: scale(1.1);
+}
+.field {
+    text-align: right;
+}
+.field-content {
+    width: 100%;
+    margin: 0 auto;
+    position: relative;
+}
+.field-content input{
+    width: 40%;
+    margin-left: 30%;
+    margin-right: 30%;
+    margin-top: 6px;
+    outline-color: rgb(17, 140, 255);
+    outline-width: .1px;
+    transition: .3s;
+}
+.field-content input:focus {
+    transition: .3s;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+.field-label {
+    left: calc(10px + 30%);
+    font-size: 10px;
+    position: absolute;
+    background-color: white;
+    border-radius: 3px;
+    color: black;
+    top: -1px;
+}
+#groups {
+    width: 100%;
+    min-height: 60px;
+    padding: 10px;
+    padding-left: 30px;
+    padding-right: 30px;
+    overflow: scroll;
+    width: 50%;
+    box-shadow: 0rem 0rem 0.3rem -0.03rem var(--shadow);
+    margin-left: 25%;
+    border-radius: 10px;
+}
+.group {
+    text-align: center;
+    border-radius: 10px;
+    border: 1px solid black;
+    transition: .3s;
+    cursor: pointer;
+    display: inline-block;
+    background-repeat: no-repeat;
+    width: 100px !important;
+    height: 100px !important;
+    position: relative;
+    margin: 10px;
+}
+.group p {
+    position: absolute;
+    width: 100%;
+    margin-top: calc(50% - 10px);
+    text-align: center;
+}
+.group:hover {
+    transform: scale(1.1);
+    transition: .3s;
+}
+input[type="file"] {
+    display: none;
+}
+#picture-label {
+    height: 30px;
+    top: 20px;
+    left: calc(50% - 15px);
+    position: absolute;
+    padding: 0px;
+}
+#picture-img {
+    height: 30px !important; 
+    width: 30px !important;
+    margin: 0px;
+    cursor: pointer;
+}
+.verified {
+    height: 20px !important;
+    width: 20px !important;
+    position: absolute;
+    right: -8px;
+    top: -8px;
+}

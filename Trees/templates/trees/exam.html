@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% load static %}
+<head>
+    <title>Branch | {{branch}}</title>
+    <link rel="stylesheet" href="{% static 'trees/css/exam.css' %}">
+    <link rel="shortcut icon" type="image/png" href="{% static 'trees/images/favicon.png' %}"/>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.min.js"></script>
+    <div id="app">
+        <v-app v-cloak>
+            <v-app-bar app flat clipped-left color="blue darken-1">
+                <v-row no-gutters align="center" justify="center">
+                    <v-col cols="1">
+                        <v-app-bar-nav-icon @click="sideBar = true">
+                            <img id="luhmann-icon" src="{% static 'trees/images/favicon.png' %}">
+                        </v-app-bar-nav-icon>
+                    </v-col>
+                    <v-col cols="3">
+                        <v-toolbar-title>Luhmann</v-toolbar-title>
+                    </v-col>
+                    <v-spacer></v-spacer>
+                    <v-col cols="4">
+                        <v-toolbar-title>
+                            <v-text-field label="Buscar" outlined clearable dense class="mt-7 pa-n10" color="secondary" @keydown.enter="searchBranch"></v-text-field>
+                        </v-toolbar-title>
+                    </v-col>
+                    <v-spacer></v-spacer>
+                    <v-col cols="4" align="right">
+                        <v-btn v-if="validGroup" href="/group_profile/{{group_name}}" icon><v-icon large>mdi-account-multiple<v-icon></v-btn>
+                        <v-btn href="/settings" icon><v-icon large>mdi-cog-outline<v-icon></v-btn>
+                    </v-col>
+                </v-row>
+            </v-app-bar>
+            <v-main>
+                <v-navigation-drawer clipped v-model="sideBar" absolute temporary hide-overlay elevation="0" width="80" class="no-shadow" color="blue darken-1">
+                    <v-list nav  @mouseout="sidebar = false">
+                        <v-list-item-group v-model="group" active-class="deep-blue--text text--accent-4" justify="center">
+                            <v-list-item href="/home/{{user}}" class="pa-0 my-4 justify-center mx-1">
+                                <v-icon large>mdi-home</v-icon>
+                            </v-list-item>
+                            <v-list-item v-for="(group, i) in allGroups" :key="i" class="pa-0 my-4 mx-1 justify-center text-h4" :href="'/home/'+group.fields.name">
+                                [[group.fields.name.charAt(0)]]
+                            </v-list-item>
+                            <v-list-item class="pa-0 my-4 justify-center mx-1" href="/create_group">
+                                <v-icon large>mdi-account-multiple-plus</v-icon>
+                            </v-list-item>
+                        </v-list-item-group>
+                    </v-list>
+                </v-navigation-drawer>
+                <v-container>
+                </v-container>
+                <v-container id="exam" fill-height>
+                    <v-btn outlined :href="'/branch/'+branch_id" absolute top left>Volver</v-btn>
+                    <v-row class="pa-5 mt-10" no-gutters dense>
+                        <v-col cols="3" align="center" justify="center" style="height:100px !important;">
+                            <v-progress-circular :value="currentScore" size="100"color="success" width="5">[[currentScore]]</v-progress-circular>
+                        </v-col>
+                        <v-spacer></v-spacer>
+                        <v-col cols="9" align="end" justify="end" style="height:100px !important;">
+                            <p class="success--text">Correctas: [[totalCorrect]]</p>
+                            <p class="error--text">Incorrectas: [[totalIncorrect]]</p>
+                            <p><v-icon :color="streak>2 ? 'blue':''">mdi-fire</v-icon> Racha: [[streak]]</p>
+                        </v-col>
+                        <v-col cols="12">
+                            <v-card elevation="5" class="pa-10" id="container">
+                                <v-btn top absolute right @click="checkAnswer" v-if="!answered">Comprobar</v-btn>
+                                <v-btn top absolute right @click="newQuestion" v-else outlined :color="correct ? 'success' : 'error' ">Siguiente</v-btn>
+                                <v-card-title v-if>[[questionTitle]]</v-card-title>
+                                <v-row justify="center">
+                                    <v-spacer></v-spacer>
+                                    <v-img width="20%" contain :src="questionImage"></v-img>
+                                    <v-spacer></v-spacer>
+                                </v-row>
+                                <div id="question"></div>
+                            </v-card>
+                        </v-col>
+                    </v-row>
+                </v-container>
+            </v-main>
+        </v-app>
+    </div>
+    <script>
+        const global_id = "{{branch.id}}"
+    </script>
+    <script type="text/javascript" src="{% static 'trees/js/exam.js' %}"></script>
+</body>
+</html>

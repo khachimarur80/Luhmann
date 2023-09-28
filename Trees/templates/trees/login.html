@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% load static %}
+<head>
+    <link rel="stylesheet" href="{% static 'trees/css/login.css' %}">
+    <title>Login</title>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <p id="title">Login</p>
+    <form method="post" id="signup">
+    {% csrf_token %}
+    <p class="field">
+    <div class="field-content"><span class="field-label">username</span><input name="username"><br></div>
+    <div class="field-content"><span class="field-label">password</span><input name="password" type="password"><br></div>
+    </p>
+    <button type="submit">Login</button>
+    </form>
+</body>
+<script type="text/javascript" src="{% static 'trees/js/animation.js' %}"></script>
+</html>

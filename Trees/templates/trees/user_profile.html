@@ -1,0 +1,90 @@
+{% extends "trees/base.html" %}
+
+{% load static %}
+
+{% block title %}Home | {{user}}{% endblock %}
+
+{% block styling %}
+    <link rel="stylesheet" href="{% static 'trees/css/profile.css' %}">
+    <style>
+        :root {
+            --shadow: {{shadow}} ;
+            --backgroundDark: {{backgroundDark}} ;
+            --highlight: {{link}};
+            --leaf: {{leaf}};
+            --box: {{box}};
+            --icolor: {{icolor}};
+            --text: {{text}};
+            --success: {{success}}
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div style="width:100%; margin: 20px; flex-direction: column; display: flex; align-items: center;">
+        <h2>Account Information</h2>
+        <div class="section1">
+            <div id="changePicture">
+                <form method="post" id="picture-form" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input name='picture' type="file" id="picture-input">
+                </form>
+                {% if profile.picture %}
+                <div id="picture" style="background-image:url({{profile.picture.url}});"></div>
+                {% else %}
+                <div id="picture"></div>
+                {% endif %}
+            </div>
+            <div id="user-data">
+                <p>Username: {{user}}</p>
+            </div>
+        </div>
+        <!--<div class="section">
+        <h2>Stats</h2>
+        <div id="graph">
+			<div class="division" id="left-division">
+				<div id="graph-tags">
+					<p>Tags: 34</p>
+				</div>
+				<div id="graph-issues">
+					<p>Issues: 156</p>
+				</div>
+				<div id="graph-time">
+					<p>Time: 25405 min</p>
+					<div id="time-graph"></div>
+				</div>
+			</div>
+			<div class="division" id="right-division">
+				<div id="badge"><svg viewBox="0 0 36 36" class="circle-svg">
+  
+                    <path class="around" stroke-dasharray="100, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path>
+                    
+                    <path class="percent" stroke-dasharray="30, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path>
+                    
+                    <text x="18" y="14" text-anchor="middle" dy="7" font-size="20" font-family="Quatroccento">III</text>
+                    
+                  </svg></div>
+				<div id="rank">
+					<div>
+						<p>Branches: 123</p>
+						<p>Average Score: 45.6</p>
+						<p>Conexions: 349</p>
+					</div>
+				</div>
+			</div>
+		</div>
+        </div>-->
+        <h2>Danger Zone</h2>
+        <div class="section">
+        <br>
+        <a id="logout" href="{% url 'logout' %}"><b>Logout</b></a><br><br>
+        </div>
+        <br><hr>
+    </div>
+{% endblock %}
+{% block frontendCode %}
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script type="text/javascript" src="{% static 'trees/js/profile.js' %}"></script>
+{% endblock %}
