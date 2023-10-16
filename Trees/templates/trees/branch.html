@@ -40,22 +40,22 @@
                     </v-col>
                 </v-row>
             </v-app-bar>
+            <v-navigation-drawer clipped v-model="sideBar" temporary hide-overlay elevation="0" width="80" class="no-shadow mt-14" color="blue darken-1" app>
+                <v-list nav  @mouseout="sidebar = false">
+                    <v-list-item-group v-model="group" active-class="deep-blue--text text--accent-4" justify="center">
+                        <v-list-item href="/home/{{user}}" class="pa-0 my-4 justify-center mx-1">
+                            <v-icon large>mdi-home</v-icon>
+                        </v-list-item>
+                        <v-list-item v-for="(group, i) in allGroups" :key="i" class="pa-0 my-4 mx-1 justify-center text-h4" :href="'/home/'+group.fields.name">
+                            [[group.fields.name.charAt(0)]]
+                        </v-list-item>
+                        <v-list-item class="pa-0 my-4 justify-center mx-1" href="/create_group">
+                            <v-icon large>mdi-account-multiple-plus</v-icon>
+                        </v-list-item>
+                    </v-list-item-group>
+                </v-list>
+            </v-navigation-drawer>
             <v-main>
-                <v-navigation-drawer clipped v-model="sideBar" absolute temporary hide-overlay elevation="0" width="80" class="no-shadow" color="blue darken-1">
-                    <v-list nav  @mouseout="sidebar = false">
-                        <v-list-item-group v-model="group" active-class="deep-blue--text text--accent-4" justify="center">
-                            <v-list-item href="/home/{{user}}" class="pa-0 my-4 justify-center mx-1">
-                                <v-icon large>mdi-home</v-icon>
-                            </v-list-item>
-                            <v-list-item v-for="(group, i) in allGroups" :key="i" class="pa-0 my-4 mx-1 justify-center text-h4" :href="'/home/'+group.fields.name">
-                                [[group.fields.name.charAt(0)]]
-                            </v-list-item>
-                            <v-list-item class="pa-0 my-4 justify-center mx-1" href="/create_group">
-                                <v-icon large>mdi-account-multiple-plus</v-icon>
-                            </v-list-item>
-                        </v-list-item-group>
-                    </v-list>
-                </v-navigation-drawer>
                 <div id="cover" v-if="viewTrash"></div>
                 <div id="trash-container" v-show="viewTrash">
                     <v-btn small icon absolute top right @click="viewTrash = false"><v-icon>mdi-close</v-icon></v-btn>
@@ -65,7 +65,7 @@
                     </v-row>
                     <br><v-divider></v-divider><br>
                 </div>
-                <v-container class="overflow-hidden justify-center" justify="start" fluid >
+                <v-container class="overflow-hidden justify-center" justify="start" fluid>
                     <v-snackbar v-model="snackbar">[[ snackbarText ]]
                         <template v-slot:action="{ attrs }">
                             <v-btn color="amber" text v-bind="attrs" @click="snackbar = false">Close</v-btn>
@@ -124,7 +124,7 @@
                         </v-col>
                         <v-menu v-model="inlineToolbar" absolute :position-x="inlineToolbarX" :position-y="inlineToolbarY" ripple="false">
                             <template v-slot:activator="{ on, attrs }">
-                                <v-col v-bind:cols="branchCols" class="mb-10" style="height:70% !important;">
+                                <v-col v-bind:cols="branchCols" class="mb-10" style="height:calc(100vh - 60px) !important;">
                                     <v-card v-if="deeplight.show" :width="deeplight.width" :style="{ 'position' : 'absolute', 'top' : deeplight.y + 'px', 'left' : deeplight.x + 'px' , 'z-index': 2}" elevation="3" color="#b8ffb5">
                                         <v-tooltip top>
                                             <template v-slot:activator="{ on, attrs }">
@@ -141,7 +141,7 @@
                                         </v-list>
                                         <v-text-field @keydown.enter="addDeeplightOption" clearable v-model='deeplightOption' class="mx-3"></v-text-field>
                                     </v-card>
-                                    <v-card elevation="0" :outlined="!focusMode"  class="overflow-auto">
+                                    <v-card elevation="0" :outlined="!focusMode"  class="overflow-auto" height="100%">
                                         <v-toolbar elevation="0" dense :collapse="focusMode" min-width="fit-content" width="100%" class="position:relative;" tile :outlined="!focusMode" style="background-color:transparent;">
                                             <div id="branch-references" @click="showBranchReferences"></div>
                                             <div id="branch-comments" @click="showBranchComments"></div>

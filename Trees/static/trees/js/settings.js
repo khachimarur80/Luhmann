@@ -40,6 +40,9 @@ const vueApp = new Vue({
         fontSizes: ['8','9','10','11','12','13','14','15','16','17','18','19','20']
     },
     methods: {
+        searchBranch: function searchBranch(event) {
+            window.location.href = '/search/'+event.target.value
+        },
         changeTheme: function changeTheme(event) {
             this.$vuetify.theme.dark = this.currentTheme=='Oscuro'
             localStorage.setItem('theme',this.currentTheme)

@@ -9,18 +9,20 @@
     {% block styling %}{% endblock %}
 </head>
 <body>
-    <canvas id="canvas"></canvas>
-    {% if not request.user.is_authenticated %}
-        <div id="login"><a href="{% url 'login' %}">Login</a></div>
-    {% endif %}
-    <div id="main-title">
-        <h1>Luhmann</h1>
-        {% if request.user.is_authenticated %}
-            <div id="get-started"><div><a href="{% url 'home' request.user %}">Start</a></div></div>
-        {% else %}
-            <div id="get-started"><div><a href="{% url 'signup' %}">Start</a></div></div>
+    <div id="main-container">
+        {% if not request.user.is_authenticated %}
+            <div id="login"><a href="{% url 'login' %}">Login</a></div>
         {% endif %}
+        <div id="main-title">
+            <h1>Luhmann</h1>
+            {% if request.user.is_authenticated %}
+                <div id="get-started"><div><a href="{% url 'home' request.user %}">Start</a></div></div>
+            {% else %}
+                <div id="get-started"><div><a href="{% url 'signup' %}">Start</a></div></div>
+            {% endif %}
+        </div>
     </div>
+    <canvas id="canvas"></canvas>
 </body>
 {% block frontendCode %}
 <script type="text/javascript" src="{% static 'trees/js/animation.js' %}"></script>

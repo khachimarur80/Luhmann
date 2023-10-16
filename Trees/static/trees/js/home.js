@@ -91,13 +91,18 @@ const vueApp = new Vue({
             }
         },
         deleteBranch : function deleteBranch(event) {
-            for (i=0; i<this.homeLeafs.length; i++) {
-                if (this.homeLeafs[i].pk == event.target.getAttribute('value')) {
-                    this.homeLeafs.splice(i, i);
+            let homeLeafs = [...home_main_leafs, ...home_pinned_leafs, ...home_recent_leafs]
+            for (i=0; i<homeLeafs.length; i++) {
+                if (homeLeafs[i].pk == event.target.getAttribute('value')) {
+                    homeLeafs.splice(i, i);
                     break
                 }
             }
             postRequest(()=>{}, 'method=delete_leaf&id='+event.target.getAttribute('value'))
+
+            setTimeout(()=>{
+                window.location.reload()
+            },200)
         },
         triggerInsertThumbnail: function triggerInsertThumbnail(event) {
             this.insertImage = true
@@ -123,6 +128,10 @@ const vueApp = new Vue({
             this.insertImage = false
             this.insertImageTarget = null
             this.insertImageFile = null
+
+            setTimeout(()=>{
+                window.location.reload()
+            },200)
         },
         cancelInsertThumbnail : function cancelInsertThumbnail() {
             this.insertImage = false
@@ -136,9 +145,11 @@ const vueApp = new Vue({
         changeBranchTitle : function changeBranchTitle(event) {
             if (this.changeBranchName) {
                 console.log(event.target)
-                for (i=0; i<this.homeLeafs.length; i++) {
-                    if (this.homeLeafs[i].pk == this.changeTitleTarget) {
-                        this.homeLeafs[i].fields['text'] = this.changeBranchName
+                console.log(this)
+                let homeLeafs = [...home_main_leafs, ...home_pinned_leafs, ...home_recent_leafs]
+                for (i=0; i<homeLeafs.length; i++) {
+                    if (homeLeafs[i].pk == this.changeTitleTarget) {
+                        homeLeafs[i].fields['text'] = this.changeBranchName
                         postRequest(()=>{}, 'method=change_title&id='+this.changeTitleTarget+'&new_title='+this.changeBranchName)
                         this.changeBranchName = ''
                         break

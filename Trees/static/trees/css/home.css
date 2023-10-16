@@ -26,3 +26,6 @@ div::-webkit-scrollbar-thumb:hover {
 .no-shadow {
     box-shadow: none !important;
 }
+[v-cloak] {
+    display: none;
+}

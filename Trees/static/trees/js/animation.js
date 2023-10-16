@@ -28,12 +28,11 @@ var canvas = document.getElementById("canvas"), ctx = canvas.getContext('2d');
     function draw() {
     ctx.clearRect(0,0,canvas.width,canvas.height);
     
-    ctx.globalCompositeOperation = "lighter";
     
     for (var i = 0, x = stars.length; i < x; i++) {
         var s = stars[i];
     
-        ctx.fillStyle = "#rgba(17, 140, 255, 1)";
+        ctx.fillStyle = "rgba(17, 140, 255, 1)";
         ctx.beginPath();
         ctx.arc(s.x, s.y, s.radius, 0, 2 * Math.PI);
         ctx.fill();
@@ -47,14 +46,14 @@ var canvas = document.getElementById("canvas"), ctx = canvas.getContext('2d');
         ctx.moveTo(starI.x,starI.y); 
         if(distance(mouse, starI) < 200) ctx.lineTo(mouse.x, mouse.y);
         for (var j = 0, x = stars.length; j < x; j++) {
-        var starII = stars[j];
-        if(distance(starI, starII) < 200) {
-            ctx.lineTo(starII.x,starII.y); 
-        }
+            var starII = stars[j];
+            if(distance(starI, starII) < 200) {
+                ctx.lineTo(starII.x,starII.y); 
+            }
         }
     }
-    ctx.lineWidth = 0.05;
-    ctx.strokeStyle = 'blue';
+    ctx.lineWidth = 0.1;
+    ctx.strokeStyle = 'rgba(17, 140, 255, 1)';
     ctx.stroke();
     }
 
