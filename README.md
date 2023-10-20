@@ -1,4 +1,4 @@
-# Luhmann - Knowledge Sharing Platform
+# Luhmann
 
 Luhmann is a knowledge sharing platform that allows users to develop and store their documents in a nested tree fashion. Documents can be connected to create a rich environment for knowledge management. Luhmann also offers collaborative features to enhance the sharing and creation of knowledge.
 
