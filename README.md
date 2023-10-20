@@ -14,14 +14,14 @@ Luhmann relies on leafs. Leafs are the unit of knowledge, containing a task, a t
 
 Simple way to group your leafs in different groups for less cluttered view.
 
-![Agrupar Leafs Home](assets/Agrupar_Leafs_Home.mov)
+![Agrupar Leafs Home](assets/Agrupar_Leafs_Home.gif)
 
 #### Filtering leafs
 
 In the homepage you can filter the branches by recent (recently opened branches), main (those branches that dont have parents, they are the ancestors of many leafs) and pinned.
 Here is how you pin a leaf/branch.
 
-![Pinned](assets/Pinned.mov)
+![Pinned](assets/Pinned.gif)
 
 ## Branch Display
 
@@ -29,25 +29,25 @@ Here is how you pin a leaf/branch.
 
 You can display images in the leafs too. Of course, they are resizable.
 
-![Image](assets/Image.mov)
+![Image](assets/Image.gif)
 
 ### Inline Style
 
 Using this inline toolbar you can select some text and select different styles. You can also search the selected text in the web!
 
-![Inline Style](assets/Inline_Style.mov)
+![Inline Style](assets/Inline_Style.gif)
 
 ### View mode
 
 You can toggle between reading and writing mode. The writing mode provides the full UI to let you work with all our tools. In the reading mode you have a simple, zen UI that lets you focus on the text itself.
 
-![View Mode](assets/Mode.mov)
+![View Mode](assets/Mode.gif)
 
 ### Styling
 
 Its possible to decide which style each life has. You can have them as headers, keywords section, or abstract section. You decide!
 
-![Styling](assets/Styling.mov)
+![Styling](assets/Styling.gif)
 
 ## Branch Exams
 
@@ -57,17 +57,17 @@ Luhmann offers you a feature where you can examine and test your skills. Next to
 
 Exam creation relies on the deeplight. You set the "deeplight mode" and start selecting text. Then you can add different options that will replace your selected text.
 
-![Deeplight](assets/Deeplight.mov)
+![Deeplight](assets/Deeplight.gif)
 
 ### Exams
 
 The exams are created based on your deeplights, and have 5 options. Only 1 is true, choose wisely! How long will you be able to hold a streak?
 
-![Examen1](assets/Examen1.mov)
+![Examen1](assets/Examen1.gif)
 
 Bad scores will result in the display of neggative, red points on the leafs. If your score is good, you will have positive green points.
 
-![Examen](assets/Examen.mov)
+![Examen](assets/Examen.gif)
 
 ## Branch Collaboration
 
@@ -77,17 +77,17 @@ We have worked ways to let you work in group too. Here are the 2 main features t
 
 Using websockets, frontend will be requesting data to the server every x seconds. It is not full websockets, because I was unexperienced. But, it sets django asgi and a consumer that responds with different data to the regular data update requests with the proper data. Here is how it looks.
 
-![Dynamic update](assets/Dynamic_update.mov)
+![Dynamic update](assets/Dynamic_update.gif)
 
 You can also reorder the leafs as you please, and the changes will be displayed too!
 
-![Dynamic update](assets/Dynamic_update1.mov)
+![Dynamic update](assets/Dynamic_update1.gif)
 
 ### Annotation
 
 Simple issues system. Just click on the right side, add an annotation, set a date and thats all. You can click the button for the issue to toggle between the states. Do/Doing/Done issues will appear in the home too!
 
-![Issues](assets/Issues.mov)
+![Issues](assets/Issues.gif)
 
 ## Branch Connection
 
@@ -95,19 +95,19 @@ Simple issues system. Just click on the right side, add an annotation, set a dat
 
 You can click the expand button and navigate to that leaf, setting that leaf to be the current viewing branch.
 
-![Expand](assets/Expand.mov)
+![Expand](assets/Expand.gif)
 
 ### Embeds
 
 You can embed leafs into another leafs/braches. Just click and insert them! They will appeared on the references section, just below the styling.
 
-![Embed](assets/Embed.mov)
+![Embed](assets/Embed.gif)
 
 ### Links
 
 You can create links between leafs. Similar to embeds, but the way the connection is created is different. Of course, they also appear on the references section.
 
-![Link](assets/Link.mov)
+![Link](assets/Link.gif)
 
 ## Settings
 
