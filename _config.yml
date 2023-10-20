@@ -1,3 +1,4 @@
+theme: jekyll-theme-cayman
 title: Luhmann
 plugins:
   - jekyll-seo-tag
