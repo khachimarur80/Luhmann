@@ -1,4 +1,4 @@
-theme: jekyll-theme-slate
+theme: jekyll-theme-cayman-dark
 title: Luhmann
 plugins:
   - jekyll-seo-tag
