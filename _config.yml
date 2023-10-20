@@ -1,4 +1,4 @@
-theme: jekyll-theme-cayman-dark
-title: iDownload
+theme: jekyll-theme-slate
+title: Luhmann
 plugins:
   - jekyll-seo-tag
